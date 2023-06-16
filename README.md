@@ -4,6 +4,22 @@
 
 A Helm chart for installing LLDAP
 
+## TL;DR
+
+* Installing LLDAP using K8s volumes and volumeClaims
+
+```
+helm install lldap . --namespace auth -f example_values/values_using_volume.yaml
+```
+
+* Installing LLDAP along with MariaDB
+
+WIP
+
+* Installing LLDAP with an already installed MariaDB/ SQL DB
+
+WIP
+
 ## Values
 
 | Key | Type | Default | Description |
