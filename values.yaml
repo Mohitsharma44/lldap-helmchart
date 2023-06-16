@@ -1,0 +1,139 @@
+# -- If you are not using an external DB, do not increase this to more than one
+replicaCount: 1
+
+image:
+  # -- Image to use for deploying LLDAP
+  repository: nitnelave/lldap
+  pullPolicy: IfNotPresent
+  tag: "stable"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+# @ignore
+serviceAccount:
+  create: true
+  annotations: {}
+  name: ""
+
+podAnnotations: {}
+
+podSecurityContext:
+  fsGroup: 1001
+
+# @ignore
+securityContext:
+  # capabilities:
+  #   drop:
+  #   - ALL
+  #   add:
+  #   - CHOWN
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+  # runAsUser: 1001  # lldap starts as root to run chown and then drops to UID:GID
+  runAsGroup: 1001
+  fsGroup: 1001
+
+service:
+  ldap:
+    # -- default is LoadBalancer so that services can reach the LDAP service 
+    type: LoadBalancer
+    annotations: {}
+      # metallb.universe.tf/ip-allocated-from-pool: first-pool
+    loadBalancerIP: ""
+  http:
+    type: ClusterIP
+    annotations: {}
+
+ingress:
+  enabled: false
+  className: ""
+  annotations: {}
+  hosts: []
+    # - host: ldap.sharmamohit.com
+    #   paths:
+    #     - path: /
+    #       pathType: ImplementationSpecific
+  tls: []
+    # - hosts:
+    #   - ldap.sharmamohit.com
+    #   secretName: default-tls-cert
+
+# @ignore
+resources:
+  limits: 
+    cpu: "0.5"
+    memory: "512Mi"
+  requests:
+    cpu: "0.25"
+    memory: "256Mi"
+
+# -- If using volume to store data
+persistentVolumeClaims: {}
+  # - name: lldap-data
+  #   storageClassName: "ceph-rbd"
+  #   size: 1Gi
+
+# -- If using volume to store data
+extraVolumes: {}
+  # - name: lldap-data
+  #   persistentVolumeClaim:
+  #     claimName: lldap-data
+
+# -- If using volume to store data
+extraVolumeMounts: {}
+  # - name: lldap-data
+  #   mountPath: /data
+
+livenessProbe:
+  # -- Whether liveness probe should be used
+  enabled: true
+
+readinessProbe:
+  # -- Whether readiness probe should be used
+  enabled: true
+
+# @ignore
+# -- We'll add details once we support exteranl DB
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 10
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# @ignore
+nodeSelector: {}
+
+# @ignore
+tolerations: []
+
+# @ignore
+affinity: {}
+
+# LLDAP specific configurations
+lldap:
+  ldap_port: 3890
+  http_port: 17170
+  base_dn: ""
+  timezone: ""
+
+  # Required env vars are passed in templates/_helpers.tpl. You can pass some extras here.
+  extra_env_vars: {}
+    # - name: Some_Secret_Var
+    #   valueFrom:
+    #     secretKeyRef:
+    #       name: lldap-secret
+    #       key: some-secret-var
+    # - name: LLDAP_LDAPS_PORT
+    #   value: "7000"
+
+  # @ignore
+  # LDAPS support is not implemented yet !! 
+  enable_ldaps: false
+  ldaps:
+    create_cert_file_secret: true  # If the secret already exists, set this to fale
+    create_key_file_secret: true  # If the secret already exists, set this to false
+    cert_file_secret: ""  # If the secret already exists, pass its name here
+    key_file_secret: ""  # If the secret alreayd exists, pass its name here

@@ -1,0 +1,44 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ include "lldap.fullname" . }}-ldap"
+  labels:
+    {{- include "lldap.labels" . | nindent 4 }}
+  {{- with .Values.service.ldap.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.ldap.type }}
+  {{- if eq .Values.service.ldap.type "LoadBalancer" }}
+  loadBalancerIP: {{ .Values.service.ldap.loadBalancerIP | default "" }}
+  {{- end }}
+  ports:
+    - port: {{ .Values.lldap.ldap_port }}
+      targetPort: {{ .Values.lldap.ldap_port }}
+      protocol: TCP
+      name: ldap
+  selector:
+    {{- include "lldap.selectorLabels" . | nindent 4 }}
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: "{{ include "lldap.fullname" . }}-http"
+  labels:
+    {{- include "lldap.labels" . | nindent 4 }}
+  {{- with .Values.service.http.annotations }}
+  annotations:
+    {{- toYaml . | nindent 4 }}
+  {{- end }}
+spec:
+  type: {{ .Values.service.http.type }}
+  ports:
+    - port: {{ .Values.lldap.http_port }}
+      targetPort: {{ .Values.lldap.http_port }}
+      protocol: TCP
+      name: http
+  selector:
+    {{- include "lldap.selectorLabels" . | nindent 4 }}

@@ -1,0 +1,47 @@
+replicaCount: 1
+
+service:
+  ldap:
+    type: LoadBalancer
+    annotations:
+      metallb.universe.tf/ip-allocated-from-pool: first-pool
+    loadBalancerIP: 10.0.1.231
+  http:
+    type: ClusterIP
+    annotations: {}
+
+ingress:
+  enabled: true
+  className: "traefik"
+  annotations:
+    cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: ldap.sharmamohit.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+  tls:
+    - hosts:
+      - ldap.sharmamohit.com
+      secretName: default-tls-cert
+
+persistentVolumeClaims:
+  - name: lldap-data
+    storageClassName: "ceph-rbd"
+    size: 1Gi
+
+extraVolumes:
+  - name: lldap-data
+    persistentVolumeClaim:
+      claimName: lldap-data
+
+extraVolumeMounts:
+  - name: lldap-data
+    mountPath: /data
+
+lldap:
+  base_dn: "dc=sharmamohit,dc=com"
+  timezone: "America/Vancouver"
+
+  # LDAPS support is not implemented yet !! 
+  enable_ldaps: false

@@ -1,0 +1,7 @@
+apiVersion: v2
+name: lldap
+description: A Helm chart for installing LLDAP
+
+type: application
+
+version: 0.1.0
