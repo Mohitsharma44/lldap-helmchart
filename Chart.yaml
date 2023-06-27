@@ -4,5 +4,11 @@ description: A Helm chart for installing LLDAP
 
 type: application
 
-version: 0.1.0
+version: 0.2.0
 appVersion: "v0.4.3"
+
+dependencies:
+  - name: mariadb-operator
+    version: "0.15.1"
+    repository: https://mariadb-operator.github.io/mariadb-operator
+    condition: mariadb.enabled

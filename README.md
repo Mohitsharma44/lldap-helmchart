@@ -1,8 +1,14 @@
 # lldap
 
-![Version: 0.1.0](https://img.shields.io/badge/Version-0.1.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square)
+![Version: 0.2.0](https://img.shields.io/badge/Version-0.2.0-informational?style=flat-square) ![Type: application](https://img.shields.io/badge/Type-application-informational?style=flat-square) ![AppVersion: v0.4.3](https://img.shields.io/badge/AppVersion-v0.4.3-informational?style=flat-square)
 
 A Helm chart for installing LLDAP
+
+## Requirements
+
+| Repository | Name | Version |
+|------------|------|---------|
+| https://mariadb-operator.github.io/mariadb-operator | mariadb-operator | 0.15.1 |
 
 ## TL;DR
 
@@ -46,6 +52,7 @@ WIP
 | lldap.ldaps.create_key_file_secret | bool | `true` |  |
 | lldap.ldaps.key_file_secret | string | `""` |  |
 | lldap.timezone | string | `""` |  |
+| mariadb.enabled | bool | `false` | Enable or disable installing MariaDB |
 | nameOverride | string | `""` |  |
 | persistentVolumeClaims | object | `{}` | If using volume to store data |
 | podAnnotations | object | `{}` |  |
@@ -56,4 +63,4 @@ WIP
 | service.http.type | string | `"ClusterIP"` |  |
 | service.ldap.annotations | object | `{}` |  |
 | service.ldap.loadBalancerIP | string | `""` |  |
-| service.ldap.type | string | `"LoadBalancer"` | default is LoadBalancer so that services can reach the LDAP service  |
+| service.ldap.type | string | `"LoadBalancer"` | default is LoadBalancer so that non k8s services can reach the LDAP service  |

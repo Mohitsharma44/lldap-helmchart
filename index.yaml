@@ -3,7 +3,22 @@ entries:
   lldap:
   - apiVersion: v2
     appVersion: v0.4.3
-    created: "2023-06-16T15:49:25.005836-07:00"
+    created: "2023-06-26T21:42:12.769026-07:00"
+    dependencies:
+    - condition: mariadb.enabled
+      name: mariadb-operator
+      repository: https://mariadb-operator.github.io/mariadb-operator
+      version: 0.15.1
+    description: A Helm chart for installing LLDAP
+    digest: 12c8991907dc4c36cf03802ca67991c335b7fd2f9e9ae67adc501de8470ddb02
+    name: lldap
+    type: application
+    urls:
+    - https://mohitsharma44.github.io/lldap-helmchart/lldap-0.2.0.tgz
+    version: 0.2.0
+  - apiVersion: v2
+    appVersion: v0.4.3
+    created: "2023-06-26T21:42:12.764499-07:00"
     description: A Helm chart for installing LLDAP
     digest: d9114a9e82d26d7d73d4232973644190f4dc79f745f2a67b2385790d846bf1ef
     name: lldap
@@ -11,4 +26,26 @@ entries:
     urls:
     - https://mohitsharma44.github.io/lldap-helmchart/lldap-0.1.0.tgz
     version: 0.1.0
-generated: "2023-06-16T15:49:25.003777-07:00"
+  mariadb-operator:
+  - apiVersion: v2
+    appVersion: v0.0.15
+    created: "2023-06-26T21:42:12.772232-07:00"
+    description: Run and operate MariaDB in a cloud native way
+    digest: cf56967c39169690530a393c23d7aa1e3cd93b7fad5157df1da5bc22e5773260
+    home: https://github.com/mariadb-operator/mariadb-operator
+    icon: https://mariadb-operator.github.io/mariadb-operator/assets/mariadb.png
+    keywords:
+    - mariadb
+    - operator
+    - mariadb-operator
+    - database
+    kubeVersion: '>= 1.16.0-0'
+    maintainers:
+    - email: mariadb-operator@proton.me
+      name: mmontes11
+    name: mariadb-operator
+    type: application
+    urls:
+    - https://mohitsharma44.github.io/lldap-helmchart/charts/mariadb-operator-0.15.1.tgz
+    version: 0.15.1
+generated: "2023-06-26T21:42:12.76071-07:00"

@@ -1,0 +1,70 @@
+{{- if .Values.mariadb.enabled }}
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: Database
+metadata:
+  name: {{ .Values.mariadb.db_name }}
+spec:
+  mariaDbRef:
+    name: mariadb
+  characterSet: utf8
+  collate: utf8_general_ci
+
+---
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: User
+metadata:
+  name: {{ .Values.mariadb.user }}
+spec:
+  name: {{ .Values.mariadb.user }}
+  mariaDbRef:
+    name: mariadb
+  passwordSecretKeyRef:
+    name: {{ .Values.mariadb.user }}
+    key: password
+  maxUserConnections: 20
+
+---
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: Grant
+metadata:
+  name: grant
+spec:
+  mariaDbRef:
+    name: mariadb
+  privileges:
+    - "ALL"
+  database: "{{ .Values.mariadb.db_name }}"
+  table: "*"
+  username: {{ .Values.mariadb.user }}
+  grantOption: true
+
+{{- if .Values.mariadb.backup.enabled }}
+---
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: Backup
+metadata:
+  name: {{ .Values.mariadb.db_name }}
+spec:
+  mariaDbRef:
+    name: mariadb
+  schedule:
+    cron: "*/1 * * * *"
+    suspend: false
+  maxRetentionDays: {{ .Values.mariadb.backup.maxRetentionDays }}
+  storage:
+    persistentVolumeClaim:
+      resources:
+        requests:
+          storage: {{ .Values.mariadb.backup.volume_size }}
+      storageClassName: {{ .Values.mariadb.backup.storageClassName }}
+      accessModes:
+        - ReadWriteOnce
+  resources:
+    requests:
+      cpu: 100m
+      memory: 128Mi
+    limits:
+      cpu: 300m
+      memory: 512Mi
+{{- end }}
+{{- end }}

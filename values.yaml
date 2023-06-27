@@ -37,7 +37,7 @@ securityContext:
 
 service:
   ldap:
-    # -- default is LoadBalancer so that services can reach the LDAP service 
+    # -- default is LoadBalancer so that non k8s services can reach the LDAP service 
     type: LoadBalancer
     annotations: {}
       # metallb.universe.tf/ip-allocated-from-pool: first-pool
@@ -137,3 +137,19 @@ lldap:
     create_key_file_secret: true  # If the secret already exists, set this to false
     cert_file_secret: ""  # If the secret already exists, pass its name here
     key_file_secret: ""  # If the secret alreayd exists, pass its name here
+
+# Fore more configurable parameters, refer https://github.com/mariadb-operator/mariadb-operator
+mariadb:
+  # -- Enable or disable installing MariaDB
+  enabled: false
+  # logLevel: INFO
+  # ha:
+  #   enabled: true
+  # metrics:
+  #   enabled: false
+  #   serviceMonitor:
+  #     enabled: false
+  # webhook:
+  #   enabled: true
+  #   certificate:
+  #     certManager: true
