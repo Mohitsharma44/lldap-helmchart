@@ -23,6 +23,21 @@ spec:
     key: password
   maxUserConnections: 20
 
+---
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: Grant
+metadata:
+  name: grant
+spec:
+  mariaDbRef:
+    name: mariadb
+  privileges:
+    - "ALL"
+  database: "{{ .Values.mariadb.db_name }}"
+  table: "*"
+  username: {{ .Values.mariadb.user }}
+  grantOption: true
+
 {{- if .Values.mariadb.backup.enabled }}
 ---
 apiVersion: mariadb.mmontes.io/v1alpha1
