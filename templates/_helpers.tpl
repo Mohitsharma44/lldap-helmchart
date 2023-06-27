@@ -87,4 +87,6 @@ Create the env vars to pass to lldap pod
     secretKeyRef:
       name: lldap-secret
       key: lldap-ldap-user-pass
+- name: LLDAP_VERBOSE
+  value: "true"
 {{- end }}

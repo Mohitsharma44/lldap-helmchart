@@ -1,0 +1,119 @@
+{{- if .Values.mariadb.enabled }}
+apiVersion: mariadb.mmontes.io/v1alpha1
+kind: MariaDB
+metadata:
+  name: mariadb
+spec:
+  rootPasswordSecretKeyRef:
+    name: lldap-mariadb
+    key: root-password
+
+  database: mariadb
+  username: mariadb
+  passwordSecretKeyRef:
+    name: lldap-mariadb
+    key: password
+
+  image:
+    repository: mariadb
+    tag: "10.11.3"
+    pullPolicy: IfNotPresent
+
+  port: 3306
+
+  volumeClaimTemplate:
+    resources:
+      requests:
+        storage: 1Gi
+    storageClassName: {{ .Values.mariadb.storageClassName }}
+    accessModes:
+      - ReadWriteOnce
+  volumes: 
+    - name: tmp
+      emptyDir: {}
+  volumeMounts: 
+    - name: tmp
+      mountPath: /tmp
+
+  {{- if .Values.mariadb.ha.enabled }}
+  connection:
+    secretName: mariadb-conn
+    secretTemplate:
+      key: dsn
+
+  replication:
+    primary:
+      podIndex: 0
+      automaticFailover: true
+      service:
+        type: ClusterIP
+      connection:
+        secretName: primary-mariadb-conn
+        secretTemplate:
+          key: dsn
+    replica:
+      waitPoint: AfterCommit
+      gtid: CurrentPos
+      connectionTimeout: 10s
+      connectionRetries: 10
+      syncTimeout: 10s
+    syncBinlog: true
+
+  affinity:
+    podAntiAffinity:
+      requiredDuringSchedulingIgnoredDuringExecution:
+        - topologyKey: "kubernetes.io/hostname"
+
+  tolerations:
+    - key: "mariadb.mmontes.io/ha"
+      operator: "Exists"
+      effect: "NoSchedule"
+
+  podDisruptionBudget:
+    minAvailable: "66%"
+  {{- end }}
+
+  myCnfConfigMapKeyRef:
+    name: lldap-mariadb-config
+    key: config
+
+  resources:
+    {{- toYaml .Values.resources | nindent 4 }}
+
+  env:
+    - name: TZ
+      value: {{ .Values.lldap.timezone }}
+    - name: UMASK
+      value: "0660"
+    - name: UMASK_DIR
+      value: "0750"
+
+  podSecurityContext:
+    runAsUser: 0
+
+  securityContext:
+    allowPrivilegeEscalation: false
+
+  livenessProbe:
+    exec:
+      command:
+        - bash
+        - -c
+        - mysql -u root -p"${MARIADB_ROOT_PASSWORD}" -e "SELECT 1;"
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+
+  readinessProbe:
+    exec:
+      command:
+        - bash
+        - -c
+        - mysql -u root -p"${MARIADB_ROOT_PASSWORD}" -e "SELECT 1;"
+    initialDelaySeconds: 20
+    periodSeconds: 10
+    timeoutSeconds: 5
+
+  service:
+    type: ClusterIP
+{{- end }}
